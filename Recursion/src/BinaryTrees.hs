@@ -62,10 +62,10 @@ that inserts a value into a set, maintaining the order invariant. If the value i
 
 -}
 insertMaybe :: Ord a => a -> Set a -> Maybe (Set a)
-insertMaybe x Tip = Just (Bin Tip x Tip)
-insertMaybe x t@(Bin l v r) | x == v = Nothing 
-                       | x < v = (insertMaybe x l) >>= \l' -> pure (Bin l' v r)
-                       | otherwise = (insertMaybe x r) >>= \r' -> pure (Bin l v r')
+insertMaybe x Tip = pure (Bin Tip x Tip)
+insertMaybe x (Bin l v r) | x == v = Nothing 
+                            | x < v = (insertMaybe x l) >>= \l' -> pure (Bin l' v r)
+                            | otherwise = (insertMaybe x r) >>= \r' -> pure (Bin l v r')
 
 {-
 
