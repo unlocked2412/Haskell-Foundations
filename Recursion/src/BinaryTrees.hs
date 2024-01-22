@@ -9,7 +9,6 @@ This is a potentially very inefficient data structure, but many efficient data s
 -}
 data Set a = Tip | Bin !(Set a) !a !(Set a) deriving Show
 
-
 {-
 
 Invariant: in Bin l v r, each element of l is less than v, and each element of r is greater than v.
