@@ -1,4 +1,6 @@
+{-# LANGUAGE DeriveFoldable #-}
 module BinaryTrees where
+import Data.Foldable (toList)
 
 -- TREE exercises
 {--
@@ -7,7 +9,7 @@ Let's start with a simple "unbalanced" binary search tree representing a set.
 This is a potentially very inefficient data structure, but many efficient data structures and their operations are based on this simple foundation.
 
 -}
-data Set a = Tip | Bin !(Set a) !a !(Set a) deriving Show
+data Set a = Tip | Bin !(Set a) !a !(Set a) deriving (Show, Foldable)
 
 {-
 
@@ -30,6 +32,12 @@ with the property that
 member x s is True if x is a member of s and false otherwise. Use the ordering invariant to avoid exploring any parts of the tree you don't have to.
 
 -}
+
+valid :: Ord a => Set a -> Bool
+-- FIXME: Gabriel, you should replace this with a real validity test.
+-- It should return True if the Set obeys the invariant above, and False
+-- otherwise.
+valid s = True
 
 member :: Ord a => a -> Set a -> Bool
 member _ Tip = False
