@@ -33,11 +33,19 @@ member x s is True if x is a member of s and false otherwise. Use the ordering i
 
 -}
 
+tree :: Set Int
+tree = Bin (Bin (Bin Tip 0 Tip) 2 Tip) 4 (Bin Tip 5 Tip)
+
 valid :: Ord a => Set a -> Bool
 -- FIXME: Gabriel, you should replace this with a real validity test.
 -- It should return True if the Set obeys the invariant above, and False
 -- otherwise.
-valid s = True
+valid Tip = True
+valid (Bin l v r) = True
+
+minTree :: Ord a => Set a -> a
+minTree Tip = error "No minimum value."
+minTree (Bin l v r) = min v (minTree l)
 
 member :: Ord a => a -> Set a -> Bool
 member _ Tip = False
