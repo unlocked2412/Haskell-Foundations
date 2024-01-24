@@ -1,6 +1,5 @@
 module Main where
 
-import qualified MyLib (someFunc)
 import BinaryTrees
 import Debug.Trace
 
