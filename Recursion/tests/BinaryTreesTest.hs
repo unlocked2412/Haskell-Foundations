@@ -78,7 +78,6 @@ unionStrictlyOrderedList (x:xs) (y:ys)
     | x < y = x : unionStrictlyOrderedList xs (y:ys)
     | otherwise = y : unionStrictlyOrderedList (x:xs) ys
 
-
 prop_union :: Set OrdA -> Set OrdA -> Property
 prop_union s t = 
   valid u .&&.
@@ -94,7 +93,7 @@ prop_splitMember a s =
       ys === toList l .&&.
       zs' === toList r
         where
-          (ys, zs) = span (< a) (toList l)
+          (ys, zs) = span (< a) (toList s)
           zs' = dropWhile (== a) zs
 
 -- FIXME: Gabriel, you should add property tests for the rest of the

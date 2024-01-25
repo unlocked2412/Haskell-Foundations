@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveFoldable #-}
+{-# OPTIONS_GHC -Wall #-}
 module BinaryTrees where
 import Data.Foldable (toList)
 import Data.Function (on)
@@ -173,9 +174,10 @@ splitMember' x (Bin l v r) =
     case compare x v of
         EQ -> STriple l True r
         LT | STriple l' found l'' <- splitMember' x l
-            -> STriple l' found (l'' `join` r)
+            -> STriple l' found (Bin l'' v r)
         GT -> case splitMember' x r of
-            STriple r' found r'' -> STriple (l `join` r') found r''
+            STriple r' found r'' -> STriple (Bin l v r') found r''
+
 
 -- v in t: (l \/ {v} \/ r) /\ (tl \/ {v} \/ tr)
 -- v not in t: (l \/ {v} \/ r) /\ (tl \/ tr)
