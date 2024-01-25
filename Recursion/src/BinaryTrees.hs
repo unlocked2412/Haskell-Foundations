@@ -37,11 +37,11 @@ tree :: Set Int
 tree = Bin (Bin (Bin Tip 0 Tip) 2 Tip) 4 (Bin Tip 5 Tip)
 
 valid :: Ord a => Set a -> Bool
--- FIXME: Gabriel, you should replace this with a real validity test.
+-- DONE: Gabriel, you should replace this with a real validity test.
 -- It should return True if the Set obeys the invariant above, and False
 -- otherwise.
 valid Tip = True
-valid (Bin l v r) = allTree (v >) l && allTree (v <) r
+valid (Bin l v r) = allTree (v >) l && allTree (v <) r && valid l && valid r
 
 allTree :: (a -> Bool) -> Set a -> Bool
 allTree _ Tip = True
