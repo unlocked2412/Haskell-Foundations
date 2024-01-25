@@ -41,7 +41,11 @@ valid :: Ord a => Set a -> Bool
 -- It should return True if the Set obeys the invariant above, and False
 -- otherwise.
 valid Tip = True
-valid (Bin l v r) = True
+valid (Bin l v r) = allTree (v >) l && allTree (v <) r
+
+allTree :: (a -> Bool) -> Set a -> Bool
+allTree _ Tip = True
+allTree p (Bin l v r) = p v && allTree p l && allTree p r
 
 minTree :: Ord a => Set a -> a
 minTree Tip = error "No minimum value."
