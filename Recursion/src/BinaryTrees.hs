@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFoldable #-}
 module BinaryTrees where
 import Data.Foldable (toList)
+import Data.Function (on)
 
 -- TREE exercises
 {--
@@ -10,6 +11,9 @@ This is a potentially very inefficient data structure, but many efficient data s
 
 -}
 data Set a = Tip | Bin !(Set a) !a !(Set a) deriving (Show, Foldable)
+
+instance Eq a => Eq (Set a) where
+    (==) = (==) `on` toList
 
 {-
 
@@ -86,6 +90,7 @@ insertMaybe x (Bin l v r) | x == v = Nothing
                             | x < v = (insertMaybe x l) >>= \l' -> pure (Bin l' v r)
                             | otherwise = (insertMaybe x r) >>= \r' -> pure (Bin l v r')
 
+
 {-
 
 Exercise 4a: Write a function
@@ -115,12 +120,13 @@ maxView (Bin l x r) =
         Nothing -> Just (l, x)
         Just (r', m) -> Just (Bin l x r', m) -- r x l m
 
+-- When each element of s is less than every element of t,
+-- join s t is the union of s and t.
 join :: Set a -> Set a -> Set a
 join s t = 
     case maxView s of
         Nothing -> t
         Just (s', m) -> Bin s' m t
-
 
 {-
 
@@ -138,6 +144,64 @@ deleteMaybe x (Bin l v r)
     | otherwise = pure (join l r)
                     
 {-
+
+splitAt n xs | n <= 0 = ([], xs)
+splitAt _ [] = ([], [])
+splitAt n (x : xs) = (x : front, rear)
+  where (front, rear) = splitAt (n - 1) xs
+
+Exercise 4c: Write a function
+
+splitMaybe 4 [1,2,4,7] = ([1,2], True, [7])
+
+FIXME
+-}
+
+data STriple a b c = STriple !a !b !c
+
+-- Wrong output:
+-- splitMember 1 (Bin Tip 2 (Bin Tip 3 Tip))
+-- (Tip,False,Bin Tip 3 Tip)
+splitMember :: Ord a => a -> Set a -> (Set a, Bool, Set a)
+splitMember x s = 
+    case splitMember' x s of
+        STriple l found r -> (l, found, r)
+
+splitMember' :: Ord a => a -> Set a -> STriple (Set a) Bool (Set a)
+splitMember' _ Tip = STriple Tip False Tip
+splitMember' x (Bin l v r) =
+    case compare x v of
+        EQ -> STriple l True r
+        LT | STriple l' found l'' <- splitMember' x l
+            -> STriple l' found (l'' `join` r)
+        GT -> case splitMember' x r of
+            STriple r' found r'' -> STriple (l `join` r') found r''
+
+-- v in t: (l \/ {v} \/ r) /\ (tl \/ {v} \/ tr)
+-- v not in t: (l \/ {v} \/ r) /\ (tl \/ tr)
+-- David Feuer17:43
+-- v not in t: (l /\ tl) \/ (l /\ tr) \/ ({v} /\ tl) \/ ({v} /\ tr) \/ (r /\ tl) \/ (r /\ tr)
+-- David Feuer17:45
+-- (l /\ tl) \/ (r /\ tr)
+union :: Ord a => Set a -> Set a -> Set a
+union s t = 
+    case s of
+        Tip -> t
+        Bin l v r -> 
+            case splitMember v t of
+                (tl, _, tr) -> Bin (union l tl) v (union r tr)
+
+intersection :: Ord a => Set a -> Set a -> Set a
+intersection s t = 
+    case s of
+        Tip -> Tip
+        Bin l v r -> 
+            case splitMember v t of
+                (tl, True, tr) -> Bin (intersection l tl) v (intersection r tr)
+                (tl, False, tr) -> join (intersection l tl) (intersection r tr)
+{-
+
+
 
 Exercise 5: The same data structure can also be used to implement a "bag", sometimes called a "multiset"
 

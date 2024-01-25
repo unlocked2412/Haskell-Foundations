@@ -43,10 +43,14 @@ prop_delete a s =
 -- Test that inserting an element does what we expect relative to the
 -- understanding of Sets as representing strictly increasing lists.
 prop_insert :: OrdA -> Set OrdA -> Property
--- FIXME: Gabriel, you should write this property. You should base
+-- DONE: Gabriel, you should write this property. You should base
 -- it on ideas from prop_delete above, and use the insertList function
 -- below.
-prop_insert a s = property True
+prop_insert a s = 
+  valid s' .&&.
+  toList s' === insertList a (toList s)
+    where
+      s' = S.insert a s
 
 -- Given a value and a *strictly increasing* list, add the value to the
 -- list, producing a strictly increasing list containing it. For example:
@@ -65,6 +69,33 @@ removeAdjDuplicates :: Eq a => [a] -> [a]
 -- We use the group function to gather together equal adjacent elements,
 -- and then take only the first element of each group.
 removeAdjDuplicates xs = [ e | (e : _) <- L.group xs]
+
+unionStrictlyOrderedList :: Ord a => [a] -> [a] -> [a]
+unionStrictlyOrderedList [] ys = ys
+unionStrictlyOrderedList xs [] = xs
+unionStrictlyOrderedList (x:xs) (y:ys) 
+    | x == y = x : unionStrictlyOrderedList xs ys
+    | x < y = x : unionStrictlyOrderedList xs (y:ys)
+    | otherwise = y : unionStrictlyOrderedList (x:xs) ys
+
+
+prop_union :: Set OrdA -> Set OrdA -> Property
+prop_union s t = 
+  valid u .&&.
+  toList u === unionStrictlyOrderedList (toList s) (toList t)
+  where
+    u = S.union s t
+
+prop_splitMember :: OrdA -> Set OrdA -> Property
+prop_splitMember a s = 
+  case S.splitMember a s of
+    (l, found, r) -> 
+      found === (a `S.member` s) .&&.
+      ys === toList l .&&.
+      zs' === toList r
+        where
+          (ys, zs) = span (< a) (toList l)
+          zs' = dropWhile (== a) zs
 
 -- FIXME: Gabriel, you should add property tests for the rest of the
 -- Set API that verify it works properly relative to similar functions
@@ -102,6 +133,7 @@ prop_delete_preserves_others to_delete s = conjoin
 
 -- FIXME: Gabriel, can you think of any other good tests
 -- combining multiple operations?
+
 
 return []
 
