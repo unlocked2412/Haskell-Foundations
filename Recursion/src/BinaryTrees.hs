@@ -178,7 +178,13 @@ splitMember' x (Bin l v r) =
             -> STriple l' found (Bin l'' v r)
         GT -> case splitMember' x r of
             STriple r' found r'' -> STriple (Bin l v r') found r''
-            
+
+-- v in t: (l \/ {v} \/ r) /\ (tl \/ {v} \/ tr)
+-- v not in t: (l \/ {v} \/ r) /\ (tl \/ tr)
+-- David Feuer17:43
+-- v not in t: (l /\ tl) \/ (l /\ tr) \/ ({v} /\ tl) \/ ({v} /\ tr) \/ (r /\ tl) \/ (r /\ tr)
+-- David Feuer17:45
+-- (l /\ tl) \/ (r /\ tr)
 union :: Ord a => Set a -> Set a -> Set a
 union s t = 
     case s of
