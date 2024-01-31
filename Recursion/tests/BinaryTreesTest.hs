@@ -93,9 +93,9 @@ prop_splitMember a s =
       (found === (a `S.member` s)) .&&.
       ys === toList l .&&.
       zs' === toList r
-      where
-        (ys, zs) = span (< a) (toList s)
-        zs' = dropWhile (== a) zs
+        where
+          (ys, zs) = span (< a) (toList s)
+          zs' = dropWhile (== a) zs
 
 -- FIXME: Gabriel, you should add property tests for the rest of the
 -- Set API that verify it works properly relative to similar functions
