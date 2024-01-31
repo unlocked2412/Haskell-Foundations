@@ -86,21 +86,20 @@ prop_union s t =
   where
     u = S.union s t
 
-prop_splitMember :: OrdA -> Set OrdA -> Property
-prop_splitMember a s = 
+prop_splitMember :: OrdA -> S.Set OrdA -> Property
+prop_splitMember a s =
   case S.splitMember a s of
-    (l, found, r) -> 
-      found === (a `S.member` s) .&&.
+    (l, found, r) ->
+      (found === (a `S.member` s)) .&&.
       ys === toList l .&&.
       zs' === toList r
-        where
-          (ys, zs) = span (< a) (toList l)
-          zs' = dropWhile (== a) zs
+      where
+        (ys, zs) = span (< a) (toList s)
+        zs' = dropWhile (== a) zs
 
 -- FIXME: Gabriel, you should add property tests for the rest of the
 -- Set API that verify it works properly relative to similar functions
 -- on strictly ordered lists.
-
 
 -- Interactions. The following tests check for the ways we expect certain
 -- operations to interact.
@@ -136,9 +135,11 @@ prop_delete_preserves_others to_delete s = conjoin
 
 
 return []
-
 properties :: IO Bool
 properties = $quickCheckAll
+
+-- main :: IO ()
+-- main = $quickCheck (prop_splitMember)
 
 main :: IO ()
 main = do

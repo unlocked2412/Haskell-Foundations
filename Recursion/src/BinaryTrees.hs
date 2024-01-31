@@ -167,15 +167,27 @@ splitMember x s =
     case splitMember' x s of
         STriple l found r -> (l, found, r)
 
+-- LT | STriple l' found l'' <- splitMember' x l
+--            -> STriple l' found (l'' `join` r)
 splitMember' :: Ord a => a -> Set a -> STriple (Set a) Bool (Set a)
 splitMember' _ Tip = STriple Tip False Tip
 splitMember' x (Bin l v r) =
     case compare x v of
         EQ -> STriple l True r
-        LT | STriple l' found l'' <- splitMember' x l
-            -> STriple l' found (l'' `join` r)
+        LT -> case splitMember' x l of
+            STriple l' found l'' -> STriple l' found (Bin l'' v r)
         GT -> case splitMember' x r of
-            STriple r' found r'' -> STriple (l `join` r') found r''
+            STriple r' found r'' -> STriple (Bin l v r') found r''
+
+{-
+1
+Bin Tip 3 (Bin Tip 4 Tip)
+[] /= [4]
+
+1
+Bin Tip 1 (Bin Tip 3 Tip)
+[] /= [3]
+-}
 
 -- v in t: (l \/ {v} \/ r) /\ (tl \/ {v} \/ tr)
 -- v not in t: (l \/ {v} \/ r) /\ (tl \/ tr)
@@ -200,8 +212,6 @@ intersection s t =
                 (tl, True, tr) -> Bin (intersection l tl) v (intersection r tr)
                 (tl, False, tr) -> join (intersection l tl) (intersection r tr)
 {-
-
-
 
 Exercise 5: The same data structure can also be used to implement a "bag", sometimes called a "multiset"
 
