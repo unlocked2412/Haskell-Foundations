@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveFoldable #-}
+{-# OPTIONS_GHC -Wall #-}
 module BinaryTrees where
 import Data.Foldable (toList)
 import Data.Function (on)

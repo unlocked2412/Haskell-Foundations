@@ -78,7 +78,6 @@ unionStrictlyOrderedList (x:xs) (y:ys)
     | x < y = x : unionStrictlyOrderedList xs (y:ys)
     | otherwise = y : unionStrictlyOrderedList (x:xs) ys
 
-
 prop_union :: Set OrdA -> Set OrdA -> Property
 prop_union s t = 
   valid u .&&.
