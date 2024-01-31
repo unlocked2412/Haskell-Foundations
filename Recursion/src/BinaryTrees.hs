@@ -176,8 +176,8 @@ splitMember' x (Bin l v r) =
         EQ -> STriple l True r
         LT | STriple l' found l'' <- splitMember' x l
             -> STriple l' found (Bin l'' v r)
-        GT | STriple r' found r'' <- splitMember' x r
-            -> STriple (Bin l v r') found r''
+        GT | case splitMember' x r of
+            STriple r' found r'' -> STriple (Bin l v r') found r''
 
 {-
 1
