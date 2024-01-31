@@ -171,7 +171,7 @@ splitMember x s =
 --            -> STriple l' found (l'' `join` r)
 splitMember' :: Ord a => a -> Set a -> STriple (Set a) Bool (Set a)
 splitMember' _ Tip = STriple Tip False Tip
-splitMember' x (Bin l v r) =
+splitMember' x (Bin l v r) = 
     case compare x v of
         EQ -> STriple l True r
         LT -> case splitMember' x l of
