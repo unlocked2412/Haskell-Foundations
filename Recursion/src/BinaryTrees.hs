@@ -174,10 +174,10 @@ splitMember' _ Tip = STriple Tip False Tip
 splitMember' x (Bin l v r) = 
     case compare x v of
         EQ -> STriple l True r
-        LT -> case splitMember' x l of
-            STriple l' found l'' -> STriple l' found (Bin l'' v r)
-        GT -> case splitMember' x r of
-            STriple r' found r'' -> STriple (Bin l v r') found r''
+        LT | STriple l' found l'' <- splitMember' x l
+            -> STriple l' found (Bin l'' v r)
+        GT | STriple r' found r'' <- splitMember' x r
+            -> STriple (Bin l v r') found r''
 
 {-
 1
