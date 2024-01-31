@@ -179,6 +179,7 @@ splitMember' x (Bin l v r) =
         GT -> case splitMember' x r of
             STriple r' found r'' -> STriple (Bin l v r') found r''
 
+
 -- v in t: (l \/ {v} \/ r) /\ (tl \/ {v} \/ tr)
 -- v not in t: (l \/ {v} \/ r) /\ (tl \/ tr)
 -- David Feuer17:43
