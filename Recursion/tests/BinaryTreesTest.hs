@@ -52,6 +52,15 @@ prop_insert a s =
     where
       s' = S.insert a s
 
+prop_insertMaybe :: OrdA -> Set OrdA -> Property
+prop_insertMaybe a s = 
+    valid s .&&.
+    case ms of 
+      Just s' -> toList s' === insertList a (toList s)
+      Nothing -> property True
+  where
+    ms = S.insertMaybe a s
+
 -- Given a value and a *strictly increasing* list, add the value to the
 -- list, producing a strictly increasing list containing it. For example:
 --
@@ -78,6 +87,8 @@ unionStrictlyOrderedList (x:xs) (y:ys)
     | x < y = x : unionStrictlyOrderedList xs (y:ys)
     | otherwise = y : unionStrictlyOrderedList (x:xs) ys
 
+-- prop_minView = undefined
+
 
 prop_union :: Set OrdA -> Set OrdA -> Property
 prop_union s t = 
@@ -85,6 +96,8 @@ prop_union s t =
   toList u === unionStrictlyOrderedList (toList s) (toList t)
   where
     u = S.union s t
+
+-- prop_intersection = undefined
 
 prop_splitMember :: OrdA -> S.Set OrdA -> Property
 prop_splitMember a s =
