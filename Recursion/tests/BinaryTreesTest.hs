@@ -4,14 +4,16 @@
 
 module Main where
 
+
 import qualified BinaryTrees as S
 import BinaryTrees (Set (..))
 
+import Debug.Dump
 import Test.QuickCheck
 import Test.QuickCheck.Poly (OrdA)
 import System.Exit
 
-import Data.Foldable (toList)
+import Data.Foldable (toList, null)
 import qualified Data.List as L
 
 import ArbitrarySet ()
@@ -54,10 +56,9 @@ prop_insert a s =
 
 prop_insertMaybe :: OrdA -> Set OrdA -> Property
 prop_insertMaybe a s = 
-    valid s .&&.
     case ms of 
-      Just s' -> toList s' === insertList a (toList s)
-      Nothing -> property True
+      Just s' -> valid s' .&&. toList s' === insertList a (toList s)
+      Nothing -> property (S.member a s)
   where
     ms = S.insertMaybe a s
 
@@ -87,6 +88,18 @@ unionStrictlyOrderedList (x:xs) (y:ys)
     | x < y = x : unionStrictlyOrderedList xs (y:ys)
     | otherwise = y : unionStrictlyOrderedList (x:xs) ys
 
+-- minView :: Set a -> Maybe (a, Set a)
+-- minView Tip = Nothing
+-- minView (Bin l x r) = 
+--     case minView l of
+--         Nothing -> Just (x, r)
+--         Just (m, l') -> Just (m, Bin l' x r) -- m l' x r
+
+-- prop_minView :: Set OrdA -> Property
+-- prop_minView s = 
+--   case S.minView s of
+--     Nothing -> property (null s)
+--     Just (x, s') -> valid s' .&&. (x : toList s')
 
 prop_union :: Set OrdA -> Set OrdA -> Property
 prop_union s t = 
@@ -101,6 +114,8 @@ prop_splitMember :: OrdA -> S.Set OrdA -> Property
 prop_splitMember a s =
   case S.splitMember a s of
     (l, found, r) ->
+      (valid l) .&&. 
+      (valid r) .&&.
       (found === (a `S.member` s)) .&&.
       ys === toList l .&&.
       zs' === toList r

@@ -11,10 +11,17 @@ Let's start with a simple "unbalanced" binary search tree representing a set.
 This is a potentially very inefficient data structure, but many efficient data structures and their operations are based on this simple foundation.
 
 -}
-data Set a = Tip | Bin !(Set a) !a !(Set a) deriving (Show, Foldable)
+data Set a = Tip | Bin !(Set a) !a !(Set a) deriving (Show)
 
 instance Eq a => Eq (Set a) where
     (==) = (==) `on` toList
+
+instance Foldable Set where
+    foldMap _ Tip = mempty
+    foldMap f (Bin l v r) = foldMap f l <> f v <> foldMap f r
+
+    null Tip = True
+    null Bin {} = False
 
 {-
 
@@ -54,7 +61,7 @@ allTree p (Bin l v r) = p v && allTree p l && allTree p r
 
 minTree :: Ord a => Set a -> a
 minTree Tip = error "No minimum value."
-minTree (Bin l v r) = min v (minTree l)
+minTree (Bin l v _) = min v (minTree l)
 
 member :: Ord a => a -> Set a -> Bool
 member _ Tip = False
@@ -72,7 +79,7 @@ that inserts a value into a set, maintaining the order invariant. If the value i
 -}
 insert :: Ord a => a -> Set a -> Set a
 insert x Tip = Bin Tip x Tip
-insert x t@(Bin l v r) | x == v = t
+insert x (Bin l v r) | x == v = t
                        | x < v = Bin (insert x l) v r
                        | otherwise = Bin l v (insert x r)
 
