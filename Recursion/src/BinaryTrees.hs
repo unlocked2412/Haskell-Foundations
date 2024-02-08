@@ -79,7 +79,7 @@ that inserts a value into a set, maintaining the order invariant. If the value i
 -}
 insert :: Ord a => a -> Set a -> Set a
 insert x Tip = Bin Tip x Tip
-insert x (Bin l v r) | x == v = t
+insert x t@(Bin l v r) | x == v = t
                        | x < v = Bin (insert x l) v r
                        | otherwise = Bin l v (insert x r)
 

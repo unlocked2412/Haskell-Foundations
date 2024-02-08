@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Main where
 
@@ -8,7 +8,6 @@ module Main where
 import qualified BinaryTrees as S
 import BinaryTrees (Set (..))
 
-import Debug.Dump
 import Test.QuickCheck
 import Test.QuickCheck.Poly (OrdA)
 import System.Exit
@@ -17,6 +16,7 @@ import Data.Foldable (toList, null)
 import qualified Data.List as L
 
 import ArbitrarySet ()
+import TH
 
 -- | A version of S.valid that produces a Property labeling the failure
 -- as being caused by an invalid Set.
@@ -114,11 +114,11 @@ prop_splitMember :: OrdA -> S.Set OrdA -> Property
 prop_splitMember a s =
   case S.splitMember a s of
     (l, found, r) ->
-      (valid l) .&&. 
-      (valid r) .&&.
-      (found === (a `S.member` s)) .&&.
-      ys === toList l .&&.
-      zs' === toList r
+      [ann| valid l |] .&&.
+      [ann| valid r |] .&&.
+      [ann| found === (a `S.member` s) |] .&&.
+      [ann| ys === toList l |] .&&.
+      [ann| zs' === toList r |]
         where
           (ys, zs) = span (< a) (toList s)
           zs' = dropWhile (== a) zs
