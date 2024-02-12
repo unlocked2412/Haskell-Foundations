@@ -63,5 +63,4 @@ test-suite Recursion-test
     build-depends:    base,
                       containers,
                       Recursion,
-                      QuickCheck,
-                      dump
+                      QuickCheck

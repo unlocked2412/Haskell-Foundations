@@ -45,8 +45,8 @@ member x s is True if x is a member of s and false otherwise. Use the ordering i
 
 -}
 
-tree :: Set Int
-tree = Bin (Bin (Bin Tip 0 Tip) 2 Tip) 4 (Bin Tip 5 Tip)
+-- >>> :t splitMember 1
+-- splitMember 1 :: (Ord a, Num a) => Set a -> (Set a, Bool, Set a)
 
 valid :: Ord a => Set a -> Bool
 -- DONE: Gabriel, you should replace this with a real validity test.
@@ -79,7 +79,7 @@ that inserts a value into a set, maintaining the order invariant. If the value i
 -}
 insert :: Ord a => a -> Set a -> Set a
 insert x Tip = Bin Tip x Tip
-insert x (Bin l v r) | x == v = t
+insert x (Bin l v r) | x == v = Bin l v r
                        | x < v = Bin (insert x l) v r
                        | otherwise = Bin l v (insert x r)
 
@@ -167,9 +167,6 @@ FIXME
 
 data STriple a b c = STriple !a !b !c
 
--- Wrong output:
--- splitMember 1 (Bin Tip 2 (Bin Tip 3 Tip))
--- (Tip,False,Bin Tip 3 Tip)
 splitMember :: Ord a => a -> Set a -> (Set a, Bool, Set a)
 splitMember x s = 
     case splitMember' x s of
@@ -235,7 +232,7 @@ member' x (Bin' l v r) | x == v = True
 
 insert' :: Ord a => a -> Bag a -> Bag a
 insert' x Tip' = Bin' Tip' x Tip'
-insert' x t@(Bin' l v r) | x == v = Bin' (insert' x l) v r
+insert' x (Bin' l v r) | x == v = Bin' (insert' x l) v r
                          | x < v = Bin' (insert' x l) v r
                          | otherwise = Bin' l v (insert' x r)
 

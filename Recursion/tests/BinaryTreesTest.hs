@@ -1,14 +1,13 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Main where
-
 
 import qualified BinaryTrees as S
 import BinaryTrees (Set (..))
 
-import Debug.Dump
 import Test.QuickCheck
 import Test.QuickCheck.Poly (OrdA)
 import System.Exit
@@ -88,18 +87,23 @@ unionStrictlyOrderedList (x:xs) (y:ys)
     | x < y = x : unionStrictlyOrderedList xs (y:ys)
     | otherwise = y : unionStrictlyOrderedList (x:xs) ys
 
--- minView :: Set a -> Maybe (a, Set a)
--- minView Tip = Nothing
--- minView (Bin l x r) = 
---     case minView l of
---         Nothing -> Just (x, r)
---         Just (m, l') -> Just (m, Bin l' x r) -- m l' x r
+tree = Bin (Bin Tip 3 Tip) 5 (Bin Tip 7 Tip)
 
--- prop_minView :: Set OrdA -> Property
--- prop_minView s = 
---   case S.minView s of
---     Nothing -> property (null s)
---     Just (x, s') -> valid s' .&&. (x : toList s')
+prop_minView :: Set OrdA -> Property
+prop_minView s = 
+  case S.minView s of
+    Nothing -> property (null s)
+    Just (x, s') -> 
+      valid s' .&&. 
+      toList s === (x : toList s')
+      
+prop_maxView :: Set OrdA -> Property
+prop_maxView s = 
+  case S.maxView s of
+    Nothing -> property (null s)
+    Just (s', x) -> 
+      valid s' .&&. 
+      toList s === (toList s' ++ [x])
 
 prop_union :: Set OrdA -> Set OrdA -> Property
 prop_union s t = 
@@ -108,6 +112,26 @@ prop_union s t =
   where
     u = S.union s t
 
+-- deleteMaybe :: Ord a => a -> Set a -> Maybe (Set a)
+-- deleteMaybe _ Tip = Nothing
+-- deleteMaybe x (Bin l v r) 
+--     | x < v     = deleteMaybe x l >>= \l' -> pure (Bin l' x r)
+--     | x > v     = deleteMaybe x r >>= \r' -> pure (Bin l x r')
+--     | otherwise = pure (join l r)
+
+-- prop_deleteMaybe :: OrdA -> Set OrdA -> Property
+
+
+-- intersection :: Ord a => Set a -> Set a -> Set a
+-- intersection s t = 
+--     case s of
+--         Tip -> Tip
+--         Bin l v r -> 
+--             case splitMember v t of
+--                 (tl, True, tr) -> Bin (intersection l tl) v (intersection r tr)
+--                 (tl, False, tr) -> join (intersection l tl) (intersection r tr)
+
+-- prop_intersection :: Set OrdA -> Set OrdA -> Property
 -- prop_intersection = undefined
 
 prop_splitMember :: OrdA -> S.Set OrdA -> Property
@@ -117,8 +141,8 @@ prop_splitMember a s =
       (valid l) .&&. 
       (valid r) .&&.
       (found === (a `S.member` s)) .&&.
-      ys === toList l .&&.
-      zs' === toList r
+      (ys === toList l) .&&.
+      (zs' === toList r)
         where
           (ys, zs) = span (< a) (toList s)
           zs' = dropWhile (== a) zs
@@ -165,7 +189,7 @@ properties :: IO Bool
 properties = $quickCheckAll
 
 -- main :: IO ()
--- main = $quickCheck (prop_splitMember)
+-- main = quickCheckWith (stdArgs { maxSuccess = 1000 }) (prop_splitMember)
 
 main :: IO ()
 main = do
