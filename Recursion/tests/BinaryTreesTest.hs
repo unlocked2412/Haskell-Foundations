@@ -1,9 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TemplateHaskell #-}
-<<<<<<< HEAD
 {-# LANGUAGE ViewPatterns #-}
-=======
->>>>>>> 823815bc8234bca0c402039b57fb6475370e3e60
 {-# LANGUAGE QuasiQuotes #-}
 
 module Main where
@@ -142,19 +139,11 @@ prop_splitMember :: OrdA -> S.Set OrdA -> Property
 prop_splitMember a s =
   case S.splitMember a s of
     (l, found, r) ->
-<<<<<<< HEAD
-      (valid l) .&&. 
-      (valid r) .&&.
-      (found === (a `S.member` s)) .&&.
-      (ys === toList l) .&&.
-      (zs' === toList r)
-=======
       [ann| valid l |] .&&.
       [ann| valid r |] .&&.
       [ann| found === (a `S.member` s) |] .&&.
       [ann| ys === toList l |] .&&.
       [ann| zs' === toList r |]
->>>>>>> 823815bc8234bca0c402039b57fb6475370e3e60
         where
           (ys, zs) = span (< a) (toList s)
           zs' = dropWhile (== a) zs
