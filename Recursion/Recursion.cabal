@@ -59,8 +59,16 @@ test-suite Recursion-test
     hs-source-dirs:   tests
     main-is:          BinaryTreesTest.hs
     other-modules:
-      ArbitrarySet
+      ArbitrarySet,
+      TH
     build-depends:    base,
                       containers,
+                      template-haskell,
                       Recursion,
+<<<<<<< HEAD
                       QuickCheck
+=======
+                      QuickCheck,
+                      text,
+                      haskell-src-meta
+>>>>>>> 823815bc8234bca0c402039b57fb6475370e3e60
